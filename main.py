@@ -11,7 +11,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import Message
 from aiogram.filters import Command
 
-get_answer = lambda question: next(wolframalpha.Client(app_id).query(question).results).text
+get_answer = lambda question: wolfram_client.query(question).results
 translator = Translator(to_lang='ru', from_lang='en')
 router = Router()
 
@@ -26,8 +26,8 @@ async def start_handler(msg: Message):
 @router.message()
 async def message_handler(msg: Message):
     try:
-        ans = get_answer(msg.text)
-        await msg.answer(f"Решение:\n{translator.translate(ans)}")
+        ans = '\n'.join([elem.text for elem in list(get_answer(question=msg.text))])
+        await msg.answer(f"Решение:\n{ans}")
     except:
         logging.error(f"Invalid answer on question {msg.text}")
         await msg.answer(f"К сожалению, произошла ошибка. Повторите попытку позже")
@@ -48,6 +48,7 @@ if __name__ == "__main__":
     token = config.get('telegram', 'token')
 
     if app_id and token:
+        wolfram_client = wolframalpha.Client(app_id)
         logging.basicConfig(level=logging.INFO)
         asyncio.run(main())
     else:
