@@ -1,7 +1,7 @@
 import asyncio
 import logging
 import wolframalpha
-# from translate import Translator
+from translate import Translator
 from configparser import ConfigParser
 from tinydb import TinyDB, Query
 
